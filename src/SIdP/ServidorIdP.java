@@ -3,14 +3,23 @@ package SIdP;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+/**
+* Servidor de Identificacion Personal - SIdP
+*/
 public class ServidorIdP{
+	/**
+	* getInfo: Obtiene de la base de datos la informacion personal
+	* @param String el numero de cedula
+	* @return Un String con la informacion personal
+	*/
 	public static String getInfo(String ci){
 		String ret = "";
 		FileInputStream fs = null;
 		try {
+		    //abre el directorio SIdP/BD y busca el archivo con el numero de cedula
 		    fs = new FileInputStream("SIdP/BD/"+ci);
 		    Scanner s = new Scanner(fs);
-		 
 		while(s.hasNextLine()){
 		    ret += s.nextLine();}
 		} catch (Exception ex) {
@@ -22,11 +31,14 @@ public class ServidorIdP{
 		    } catch (IOException ex) {
 
 		    }
-		}	
+		}
 		return ret;
 	}
+
+	/**
+	* Funcion main
+	*/
 	public static void main(String a[]){
-        
         // Variables
         int puertoServidor = 2020;
 
@@ -53,22 +65,22 @@ public class ServidorIdP{
                 // 4) Receive LLAMADA BLOQUEANTE
                 serverSocket.receive(receivePacket);
 
-                System.out.println("Aceptamos un paquete");
+                System.out.println("Recibimos un pedido");
 
                 // Datos recibidos e Identificamos quien nos envio
                 String datoRecibido = new String(receivePacket.getData());
-		
+
                 InetAddress IPAddress = receivePacket.getAddress();
 
                 int port = receivePacket.getPort();
 
                 System.out.println("De : " + IPAddress + ":" + port);
-                System.out.println("Mensaje : " + datoRecibido);
+                System.out.println("CI pedido : " + datoRecibido);
 
                 // Respondemos el mismo mensaje en Mayuscula
 		String respuesta = getInfo(datoRecibido);
-		System.out.println(respuesta);
-		
+		//System.out.println(respuesta);
+
 
                 // Enviamos la respuesta inmediatamente a ese mismo cliente
                 // Es no bloqueante
@@ -85,7 +97,7 @@ public class ServidorIdP{
 		ex.printStackTrace();
             System.out.println("Puerto UDP " + puertoServidor +" esta ocupado.");
             System.exit(1);
-        } 
+        }
 
     }
 }
