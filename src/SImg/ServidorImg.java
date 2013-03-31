@@ -1,5 +1,6 @@
 package SImg;
 
+import com.google.gson.*;
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
@@ -7,7 +8,7 @@ import javax.imageio.ImageIO;
 
 public class ServidorImg {
 
-    private static int BUFF_SIZE = 1024;
+    private static int BUFF_SIZE = 2048;
 
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
@@ -27,18 +28,17 @@ public class ServidorImg {
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(
                         socket.getInputStream()));
-                out.println("Bienvenido!");
                 String inputLine, outputLine;
+		Gson gson = new Gson();
 
                 if ((inputLine = in.readLine()) != null) {
                     System.out.println("ci recibido: " + inputLine);
                     Imagenes img = new Imagenes();
-	            byte [] imagen1 = img.getImagen(Integer.parseInt(inputLine),"1.jpeg");
-		    byte [] imagen2 = img.getImagen(Integer.parseInt(inputLine),"2.jpeg");
-		    byte [] imagen3 = img.getImagen(Integer.parseInt(inputLine),"3.jpeg");
-		    out.print(imagen1);
-                   out.print(imagen2);
-		out.print(imagen3);
+		    String imagen = "";
+	 	    for(int i=1;i<=3;i++){
+	            	imagen = gson.toJson(img.getImagen(Integer.parseInt(inputLine),i+".jpeg"));
+			out.println(imagen);
+		    }
                 }
                 out.close();
                 in.close();
