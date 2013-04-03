@@ -14,12 +14,12 @@ public class ServidorImg {
         ServerSocket serverSocket = null;
         boolean listening = true;
         try {
-            serverSocket = new ServerSocket(4444);
+            serverSocket = new ServerSocket(2021);
         } catch (IOException e) {
             System.err.println("No se puede abrir el puerto: 2021.");
             System.exit(1);
         }
-        System.out.println("Puerto abierto: 4444.");
+        System.out.println("Puerto abierto: 2021.");
 
         while (listening) {
             try {
@@ -36,7 +36,11 @@ public class ServidorImg {
                     Imagenes img = new Imagenes();
 		    String imagen = "";
 	 	    for(int i=1;i<=3;i++){
+			try{
 	            	imagen = gson.toJson(img.getImagen(Integer.parseInt(inputLine),i+".jpeg"));
+			}catch(FileNotFoundException e){
+				imagen = "[]";			
+			}
 			out.println(imagen);
 		    }
                 }
