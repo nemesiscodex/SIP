@@ -10,6 +10,7 @@ import SIdP.*;
 import SPos.*;
 import java.io.*;
 import java.net.*;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -20,7 +21,8 @@ public class Cliente extends javax.swing.JFrame {
     /**
      * Creates new form Cliente
      */
-    public Cliente() {
+    public Cliente(String titulo) {
+	this.setTitle(titulo);
         initComponents();
     }
     public void cargarIDP(Identificacion id){
@@ -32,6 +34,17 @@ public class Cliente extends javax.swing.JFrame {
 	jCuidadNac.setText(id.getCiudad_nac());
 	jCuidadAct.setText(id.getCiudad_act());
 	jProfesion.setText(id.getProfesion());
+    }
+    public void cargarIDP(){
+	String p = "{No disponible}";
+	jNombre.setText(p);
+	jApellido.setText(p);
+	jEstado.setText(p);
+	jFecha.setText(p);
+	jEstadoC.setText(p);
+	jCuidadNac.setText(p);
+	jCuidadAct.setText(p);
+	jProfesion.setText(p);
     }
 
     /**
@@ -154,7 +167,10 @@ public class Cliente extends javax.swing.JFrame {
         Socket unSocket = null;
         PrintWriter out = null;
         BufferedReader in = null;
-
+	jLabel13.setText("");
+	lCara.setIcon(null);
+	lCuerpo.setIcon(null);
+	lPerfil.setIcon(null);
         try {
             unSocket = new Socket("localhost", 2019);
             // enviamos nosotros
@@ -182,7 +198,8 @@ public class Cliente extends javax.swing.JFrame {
                 }
 		Gson gson = new Gson();
 		String SidP = in.readLine();
-		if(SidP!="{}"){
+		cargarIDP();
+		if(SidP.charAt(1)!='}'){
 			
 			JsonReader reader = new JsonReader(new StringReader(SidP));
 			reader.setLenient(true);
@@ -193,16 +210,41 @@ public class Cliente extends javax.swing.JFrame {
 		img[0] = in.readLine();
 		img[1] = in.readLine();
 		img[2] = in.readLine();
+		lCara.setText("Cara{No disponible}");
+		lCuerpo.setText("Cuerpo{No disponible}");
+		lPerfil.setText("Perfil{No disponible}");
+		jPosi.setText("{No disponible}");
+		if(img[0].charAt(1)!=']'){
+			JsonReader reader = new JsonReader(new StringReader(img[0]));
+			reader.setLenient(true);
+			byte[] img0 = gson.fromJson(reader,byte[].class);
+			lCara.setText("Cara");
+			lCara.setIcon(new ImageIcon(img0));
+		}
+		if(img[1].charAt(1)!=']'){
+			JsonReader reader = new JsonReader(new StringReader(img[1]));
+			reader.setLenient(true);
+			byte[] img0 = gson.fromJson(reader,byte[].class);
+			lCuerpo.setText("Cuerpo");
+			lCuerpo.setIcon(new ImageIcon(img0));
+		}
+		if(img[2].charAt(1)!=']'){
+			JsonReader reader = new JsonReader(new StringReader(img[2]));
+			reader.setLenient(true);
+			byte[] img0 = gson.fromJson(reader,byte[].class);
+			lPerfil.setText("Perfil");
+			lPerfil.setIcon(new ImageIcon(img0));
+		}
+		
 		
 		String Posicion = in.readLine();
-		if(Posicion!="{}"){
+		if(Posicion.charAt(1)!='}'){
 			JsonReader reader = new JsonReader(new StringReader(Posicion));
 			reader.setLenient(true);
 			Posicion pos = gson.fromJson(reader,Posicion.class);
 			jPosi.setText(pos.getPosi());
 			
 		}
-		
 		
                 
             }
@@ -213,10 +255,10 @@ public class Cliente extends javax.swing.JFrame {
             unSocket.close();
         } catch (UnknownHostException e) {
             System.err.println("Host desconocido");
-            System.exit(1);
+	    jLabel13.setText("Host desconocido");
         } catch (IOException e) {
             System.err.println("Error de I/O en la conexion al host");
-            System.exit(1);
+	    jLabel13.setText("Error en la conexion al host");
         }
 
 
@@ -227,6 +269,9 @@ public class Cliente extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+	String titulo = "";
+	if(args.length>0)titulo = args[0];
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -248,14 +293,8 @@ public class Cliente extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Cliente.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Cliente().setVisible(true);
-            }
-        });
+        
+                new Cliente(titulo).setVisible(true);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField jEstado;

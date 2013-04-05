@@ -1,0 +1,8 @@
+#!/bin/sh
+
+for w in `ls`; do
+  ln -s ../1977923/1.jpeg $w/1.jpeg
+  ln -s ../1977923/2.jpeg $w/2.jpeg
+  ln -s ../1977923/3.jpeg $w/3.jpeg
+done
+

@@ -3,4 +3,4 @@
 ./sidp.sh
 ./simg.sh
 ./spos.sh
-
+#./clie.sh
