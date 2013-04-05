@@ -1,30 +1,35 @@
 package SPos;
 
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.text.*;
+import SIP.Transferencia;
 public class ServidorPos{
-	public static String getInfo(String ci){
-		String ret = "";
-		FileInputStream fs = null;
-		try {
-		    fs = new FileInputStream("SIdP/BD/"+ci);
-		    Scanner s = new Scanner(fs);
-		 
-		while(s.hasNextLine()){
-		    ret += s.nextLine();}
-		} catch (Exception ex) {
-			ret = "{}";
-		} finally {
-		    try {
-			if(fs!=null)
-		        fs.close();
-		    } catch (IOException ex) {
+	
+	
 
-		    }
-		}	
-		return ret;
+	public static Date FechaMasActual (Date Fecha1, Date Fecha2){
+	
+	if (Fecha1.compareTo(Fecha2)==0){
+		return Fecha1;
+	}else if (Fecha1.compareTo(Fecha2)<0){
+		return Fecha2;
 	}
+		return Fecha1;
+    }//fin fechaActual
+
+	public static String cuandoEsCliente(String datoRecibido, int puerto){ //codigo a ejecutarse cuando el serverPos actua de cliente para serverTelefonia
+	Transferencia objetotrans= new Transferencia();
+	String jsonPosicion= objetotrans.getDatosUDP(datoRecibido, puerto);
+	return jsonPosicion;
+		
+
+	}//fin cuandoEscliente
+
+
 	public static void main(String a[]){
         
         // Variables
@@ -65,14 +70,41 @@ public class ServidorPos{
                 System.out.println("De : " + IPAddress + ":" + port);
                 System.out.println("Mensaje : " + datoRecibido);
 
-                // Respondemos el mismo mensaje en Mayuscula
-		String respuesta = getInfo(datoRecibido);
-		System.out.println(respuesta);
+//ACA ACTUA COMO CLIENTE PARA SERVERTELEFONIA HAY QUE MANDAR LOQ RECIBIO PARA OBTENER LA FECHA Y POSICION
+		
+		int puertoA=2026;
+		int puertoB=2027;
+	
+		String PosA= cuandoEsCliente(datoRecibido, puertoA); //puerto es el puerto para conectarse a ServerTelefonia
+		String PosB= cuandoEsCliente(datoRecibido, puertoB);
+		//System.out.println("POSA["+PosA+"]");
+		
+		Gson gson = new Gson();
+		//pasar mis objetos json POSA y POSB a ServerTelefonia
+		JsonReader reader = new JsonReader(new StringReader(PosA));
+		reader.setLenient(true);
+		Posicion PosiA= gson.fromJson(reader, Posicion.class);	
+	//ServerTelefonia PosiA= gson.fromJson(PosA, ServerTelefonia.class);
+		System.out.println("LLEGA!!!");
+		reader = new JsonReader(new StringReader(PosB));
+		reader.setLenient(true);
+		Posicion PosiB= gson.fromJson(reader, Posicion.class);
+//		ServerTelefonia PosiB= gson.fromJson(PosB,ServerTelefonia.class);
+
+	
+
+		
 		
 
+                // Respondemos el mismo mensaje en Mayuscula
+		Posicion respuesta = Posicion.masReciente(PosiA,PosiB);
+		
+		//System.out.println(respuesta);
+		String json= gson.toJson(respuesta);
+		System.out.println("jsonenviado: "+json);
                 // Enviamos la respuesta inmediatamente a ese mismo cliente
                 // Es no bloqueante
-                sendData = respuesta.getBytes();
+                sendData = json.getBytes();
                 DatagramPacket sendPacket =
                         new DatagramPacket(sendData, sendData.length, IPAddress,
                         port);
@@ -89,3 +121,4 @@ public class ServidorPos{
 
     }
 }
+

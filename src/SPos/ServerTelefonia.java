@@ -13,6 +13,16 @@ public class ServerTelefonia {
 	private String Posicion;
 	public static String pathBd;//para la BD A o B
 
+	public String getFecha(){
+		return this.Fecha; 
+	}
+	public String getHora(){
+		return this.Hora;
+	}
+	public String getPosicion(){
+		return this.Posicion;
+	}
+
 
 	public static boolean SaveFile(String FilePath, String FileContent, boolean CleanFileContent)
 {
@@ -59,15 +69,19 @@ public class ServerTelefonia {
 
 	public static String getPos() {
 
-		double x,y;
+		Double x,y;
 		String posicion;
-		x=(Math.random()*100)%30;
-		y=(Math.random()*100)%30;
+		x=((Math.random()*100)%30)*100.0;
+		y=((Math.random()*100)%30)*100.0;
+
+		Integer i,j;
+		i = (Integer)(x).intValue();
+		j = (Integer)(y).intValue();
 		String a,b;
-		a= String.valueOf(x);
-		b= String.valueOf(y);
+		a= String.valueOf(i/100.0);
+		b= String.valueOf(j/100.0);
 	
-	posicion= ("("+a+","+b+")");
+	posicion= ("("+a+"x"+b+")");
 
 	return (posicion);
 	}//fin getPos
@@ -82,9 +96,10 @@ public class ServerTelefonia {
 	public static void main(String args[]) {
         
         // Variables
-        int puertoServidor = Integer.parseInt(args[1]);
-	
+      
 	pathBd=args[0]; //para bd
+	int puerto= Integer.parseInt(args[1]);//para el puerto 
+	int puertoServidor = puerto;
 
         try {
             //1) Creamos el socket Servidor de Datagramas (UDP)
@@ -123,12 +138,15 @@ public class ServerTelefonia {
 		
 		Gson gson = new Gson();
 		ServerTelefonia ubicacion= new ServerTelefonia();
-		String json =  gson.toJson(ubicacion);
+		Posicion p= new Posicion(ubicacion.Fecha, ubicacion.Hora, ubicacion.Posicion);
+			String json =  gson.toJson(p);
+		//String json =  gson.toJson(ubicacion);
 		//SaveFile((new Integer(datoRecibido)).toString(),json,true);
             	SaveFile(datoRecibido,json,true);
 
     		// Enviamos la respuesta inmediatamente a ese mismo cliente
                 // Es no bloqueante
+		System.out.println(json);
                 sendData = json.getBytes();//nose si json loq tengo q mandar aca o ubicacion o que! ni como D: aaaah!!!
                 DatagramPacket sendPacket =
                         new DatagramPacket(sendData, sendData.length, 							IPAddress,port);
