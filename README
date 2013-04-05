@@ -1,4 +1,4 @@
 Trabajo practico de SD
-Para compilar, entrar en la carpeta scripts y ejecutar compilar.sh (./compilar.sh)
-Para iniciar los servidores ./iniciarPlataforma.sh
-Para iniciar los clientes ./iniciarClientes.sh
+Para compilar, entrar en la carpeta src/scripts y ejecutar compilar.sh (./compilar.sh)
+Para iniciar los servidores entrar en la carpeta src y ejecutar iniciarPlataforma.sh (./iniciarPlataforma.sh)
+Para iniciar los clientes entrar en la carpeta src y ejecutar iniciarClientes.sh (./iniciarClientes.sh)
